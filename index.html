@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown & LaTeX To Word / Docs - D.T.Chánh</title>
+
+    <!-- Thư viện Marked (Xử lý Markdown) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        if (typeof marked === 'undefined') {
+            document.write('<script src="js/marked.min.js"><\/script>');
+        }
+    </script>
+
+    <!-- Cấu hình MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: { '[+]': ['ams'] }
+            },
+            svg: {
+                fontCache: 'none',
+                scale: 1,
+                minScale: 1
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <!-- Thư viện MathJax (Xử lý Toán) -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script>
+        if (typeof MathJax === 'undefined' || !MathJax.typesetPromise) {
+            document.write('<script id="MathJax-script" async src="js/tex-svg.js"><\/script>');
+        }
+    </script>
+
+    <style>
+        /* --- CSS TỰ VIẾT (NO EXTERNAL LIBS) --- */
+
+        :root {
+            --primary-color: #4f46e5;
+            /* Indigo 600 */
+            --primary-hover: #4338ca;
+            /* Indigo 700 */
+            --bg-color: #f8fafc;
+            /* Slate 50 */
+            --border-color: #e2e8f0;
+            /* Slate 200 */
+            --text-color: #334155;
+            /* Slate 700 */
+            --toolbar-bg: #f1f5f9;
+            /* Slate 100 */
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 1.1rem;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        header svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* --- Main Layout --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        .column {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            background-color: white;
+        }
+
+        .column:last-child {
+            border-right: none;
+        }
+
+        /* --- Toolbar --- */
+        .toolbar {
+            background-color: var(--toolbar-bg);
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
+            flex-shrink: 0;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Button Style --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid #c7d2fe;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background-color: #eef2ff;
+            border-color: var(--primary-color);
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* --- Input Area --- */
+        #latex-input {
+            flex: 1;
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            resize: none;
+            outline: none;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        /* --- Output Area --- */
+        #latex-output {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+
+        /* --- Markdown Styles --- */
+        .markdown-body {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .markdown-body h1 {
+            font-size: 1.5rem;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-body h2 {
+            font-size: 1.4rem;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-body h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .markdown-body p {
+            margin-bottom: 1em;
+        }
+
+        .markdown-body ul,
+        .markdown-body ol {
+            padding-left: 2em;
+            margin-bottom: 1em;
+        }
+
+        .markdown-body code {
+            background-color: #f1f5f9;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #ef4444;
+        }
+
+        /* --- MathJax Fixes --- */
+        mjx-container[display="false"] {
+            margin: 0 2px !important;
+            vertical-align: middle !important;
+        }
+
+        /* --- Scrollbar Customization --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* --- Fullscreen styles --- */
+        main.fullscreen-active .column:first-child {
+            display: none !important;
+        }
+
+        main.fullscreen-active .column:last-child {
+            width: 100% !important;
+            border-right: none !important;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+
+            .column {
+                width: 100%;
+                height: 50%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            main.fullscreen-active .column:last-child {
+                height: 100% !important;
+            }
+
+            header h1 {
+                font-size: 1rem;
+            }
+
+            #latex-input,
+            #latex-output {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        </svg>
+        <h1>Markdown & LaTeX &nbsp; To &nbsp; Word / Docs</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Cột Trái: Input -->
+        <div class="column">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <span>Soạn Thảo:</span>
+                    <!-- Nút Xoá với ID cụ thể -->
+                    <button onclick="clearInput()" id="btn-clear" class="btn" title="Xóa toàn bộ nội dung">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        Xóa
+                    </button>
+                </div>
+                <button onclick="copyInput()" id="btn-copy-input" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                    </svg>
+                    Sao Chép MD
+                </button>
+            </div>
+            <textarea id="latex-input" spellcheck="false" placeholder="Nhập nội dung Markdown & LaTeX vào đây...">
+# Hướng dẫn sử dụng
+
+## 1. Công thức cùng dòng (Inline)
+Phương trình $E=mc^2$ sẽ tự động có khoảng trắng khi copy.
+Nếu muốn to, thêm `\displaystyle`: $\displaystyle \int_{a}^{b} x^2 dx$
+
+## 2. Công thức tách dòng (Block)
+$$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
+
+## 3. Ma trận
+$$
+A = \begin{pmatrix}
+1 & 0 \\
+0 & 1
+\end{pmatrix}
+$$
+            </textarea>
+        </div>
+
+        <!-- Cột Phải: Output -->
+        <div class="column">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <span>Kết Quả:</span>
+                    <!-- Nút Lưu HTML -->
+                    <button onclick="saveHtml()" id="btn-save-html" class="btn" title="Tải về file HTML">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Lưu HTML
+                    </button>
+                </div>
+                <!-- Nút Phóng To (Đặt ngoài group để tự động cách đều hai bên) -->
+                <button onclick="toggleFullscreen()" id="btn-fullscreen" class="btn" title="Phóng to / Thu nhỏ kết quả">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" id="fullscreen-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                    </svg>
+                    <span>Phóng To</span>
+                </button>
+
+                <button onclick="copyOutput()" id="btn-copy-output" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                    </svg>
+                    Sao Chép KQ
+                </button>
+            </div>
+            <div id="latex-output" class="markdown-body"></div>
+        </div>
+    </main>
+
+    <script>
+        const input = document.getElementById('latex-input');
+        const output = document.getElementById('latex-output');
+        let promise = Promise.resolve();
+
+        function escapeMath(text) {
+            const mathBlocks = [];
+            const regex = /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]|\$([^$\n]*?)\$|\\\(([\s\S]*?)\\\)/g;
+
+            const protectedText = text.replace(regex, (match, g1, g2, g3, g4) => {
+                const content = g1 || g2 || g3 || g4;
+                if (content && (content.includes('\n#') || content.trim().startsWith('#'))) {
+                    return match;
+                }
+
+                mathBlocks.push(match);
+                const placeholder = `MATHJAXBLOCKPLACEHOLDER${mathBlocks.length - 1}`;
+
+                if (match.startsWith('$$') || match.startsWith('\\[')) {
+                    return `\n\n${placeholder}\n\n`;
+                }
+                return placeholder;
+            });
+            return { protectedText, mathBlocks };
+        }
+
+        function escapeHtmlLite(text) {
+            return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function renderContent() {
+            const rawText = input.value;
+            const { protectedText, mathBlocks } = escapeMath(rawText);
+            let htmlContent = marked.parse(protectedText);
+
+            mathBlocks.forEach((block, index) => {
+                const safeBlock = escapeHtmlLite(block);
+                htmlContent = htmlContent.replace(`MATHJAXBLOCKPLACEHOLDER${index}`, safeBlock);
+            });
+
+            output.innerHTML = htmlContent;
+
+            if (window.MathJax) {
+                promise = promise.then(() => {
+                    return MathJax.typesetPromise([output]);
+                }).catch((err) => console.log('MathJax Error:', err));
+            }
+        }
+
+        let timeoutId;
+        input.addEventListener('input', () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(renderContent, 50);
+        });
+
+        window.addEventListener('load', renderContent);
+
+        function copyInput() {
+            input.select();
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            const btn = document.getElementById('btn-copy-input');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span style="color: #16a34a">✓ Đã chép!</span>`;
+            setTimeout(() => btn.innerHTML = originalHtml, 1500);
+        }
+
+        // --- HÀM XÓA NỘI DUNG (CẢI TIẾN: Không dùng confirm) ---
+        let clearTimeoutId;
+        function clearInput() {
+            const btn = document.getElementById('btn-clear');
+
+            if (btn.dataset.confirm === "true") {
+                // Hành động xóa
+                input.value = "";
+                renderContent();
+                input.focus();
+
+                // Reset nút
+                resetClearBtn(btn);
+            } else {
+                // Chuyển sang trạng thái xác nhận
+                btn.dataset.confirm = "true";
+                btn.dataset.originalContent = btn.innerHTML; // Lưu nội dung cũ
+                btn.innerHTML = `<span style="color: #dc2626; font-weight: bold;">Chắc chắn?</span>`;
+                btn.style.borderColor = "#dc2626";
+
+                // Tự động hủy sau 3s nếu không bấm tiếp
+                clearTimeoutId = setTimeout(() => {
+                    resetClearBtn(btn);
+                }, 3000);
+            }
+        }
+
+        function resetClearBtn(btn) {
+            clearTimeout(clearTimeoutId);
+            btn.dataset.confirm = "false";
+            btn.innerHTML = btn.dataset.originalContent;
+            btn.style.borderColor = ""; // Reset về CSS mặc định
+        }
+
+        function saveHtml() {
+            const content = document.getElementById('latex-output').innerHTML;
+            const styles = document.querySelector('style').innerHTML;
+
+            const html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kết quả xuất HTML</title>
+<style>${styles}</style>
+<style>
+    body { padding: 2rem; background-color: #fff; max-width: 900px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="markdown-body">
+${content}
+</div>
+</body>
+</html>`;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const fileName = `Ket_Qua_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.html`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function toggleFullscreen() {
+            const mainEl = document.querySelector('main');
+            const btn = document.getElementById('btn-fullscreen');
+            const icon = document.getElementById('fullscreen-icon');
+            const isFullscreen = mainEl.classList.toggle('fullscreen-active');
+
+            if (isFullscreen) {
+                btn.querySelector('span').textContent = 'Thu Nhỏ';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />';
+            } else {
+                btn.querySelector('span').textContent = 'Phóng To';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />';
+            }
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('latex-output')]);
+            }
+        }
+
+        async function svgToPngDataUrl(svgElement) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const rect = svgElement.getBoundingClientRect();
+                    const scaleFactor = 3;
+
+                    if (rect.width === 0 || rect.height === 0) { resolve(null); return; }
+
+                    const width = Math.ceil(rect.width * scaleFactor);
+                    const height = Math.ceil(rect.height * scaleFactor);
+
+                    const clonedSvg = svgElement.cloneNode(true);
+
+                    const computedStyle = window.getComputedStyle(svgElement);
+                    clonedSvg.style.cssText = `
+                        font-family: ${computedStyle.fontFamily};
+                        font-size: ${computedStyle.fontSize};
+                        font-weight: ${computedStyle.fontWeight};
+                        color: ${computedStyle.color};
+                        width: ${width}px;
+                        height: ${height}px;
+                    `;
+
+                    clonedSvg.setAttribute("width", width + "px");
+                    clonedSvg.setAttribute("height", height + "px");
+
+                    if (!clonedSvg.getAttribute('xmlns')) clonedSvg.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+                    if (!clonedSvg.getAttribute('xmlns:xlink')) clonedSvg.setAttribute('xmlns:xlink', "http://www.w3.org/1999/xlink");
+
+                    const svgData = new XMLSerializer().serializeToString(clonedSvg);
+                    const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.clearRect(0, 0, width, height);
+                        ctx.drawImage(img, 0, 0, width, height);
+                        URL.revokeObjectURL(url);
+                        resolve(canvas.toDataURL("image/png"));
+                    };
+                    img.onerror = (e) => reject(new Error("Image failed to load"));
+                    img.src = url;
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        }
+
+        async function copyOutput() {
+            const btn = document.getElementById('btn-copy-output');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span style="color: #4f46e5">Đang xử lý...</span>`;
+
+            try {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = output.innerHTML;
+                tempDiv.style.position = 'fixed';
+                tempDiv.style.left = '-9999px';
+                tempDiv.style.width = '1000px';
+                tempDiv.style.backgroundColor = '#ffffff';
+                tempDiv.classList.add('markdown-body');
+
+                tempDiv.style.fontFamily = getComputedStyle(document.body).fontFamily;
+
+                document.body.appendChild(tempDiv);
+
+                if (window.MathJax) {
+                    await MathJax.typesetPromise([tempDiv]);
+                }
+
+                const realSvgs = tempDiv.querySelectorAll('mjx-container svg');
+                const tempContainers = tempDiv.querySelectorAll('mjx-container');
+
+                const conversionPromises = Array.from(realSvgs).map(async (svg, index) => {
+                    try {
+                        const pngData = await svgToPngDataUrl(svg);
+                        const container = tempContainers[index];
+
+                        if (pngData && container) {
+                            const imgTag = document.createElement('img');
+                            imgTag.src = pngData;
+
+                            const rect = svg.getBoundingClientRect();
+                            imgTag.style.width = rect.width + 'px';
+                            imgTag.style.height = rect.height + 'px';
+                            imgTag.style.verticalAlign = '-0.5ex';
+
+                            const isDisplay = container.getAttribute('display') === 'true';
+
+                            if (isDisplay) {
+                                const divWrapper = document.createElement('div');
+                                divWrapper.style.textAlign = 'center';
+                                divWrapper.style.margin = '12px 0';
+                                divWrapper.appendChild(imgTag);
+                                container.replaceWith(divWrapper);
+                                divWrapper.insertAdjacentHTML('beforebegin', '<br>');
+                                divWrapper.insertAdjacentHTML('afterend', '<br>');
+                            } else {
+                                container.innerHTML = '';
+                                container.appendChild(document.createTextNode('\u00A0'));
+                                container.appendChild(imgTag);
+                                container.appendChild(document.createTextNode('\u00A0'));
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Skip error SVG", index);
+                    }
+                });
+
+                await Promise.all(conversionPromises);
+
+                const range = document.createRange();
+                range.selectNodeContents(tempDiv);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                const successful = document.execCommand('copy');
+                document.body.removeChild(tempDiv);
+                selection.removeAllRanges();
+
+                if (successful) {
+                    btn.innerHTML = `<span style="color: #16a34a">✓ Đã chép xong!</span>`;
+                } else {
+                    btn.innerHTML = `<span style="color: #ef4444">Lỗi copy!</span>`;
+                }
+            } catch (err) {
+                console.error(err);
+                btn.innerHTML = `<span style="color: #ef4444">Lỗi xử lý!</span>`;
+            }
+
+            setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
+        }
+    </script>
+</body>
+
+</html>
