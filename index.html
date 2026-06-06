@@ -42,18 +42,24 @@
         /* --- CSS TỰ VIẾT (NO EXTERNAL LIBS) --- */
 
         :root {
-            --primary-color: #4f46e5;
+            --primary-color: #0a00d1;
             /* Indigo 600 */
             --primary-hover: #4338ca;
             /* Indigo 700 */
             --bg-color: #f8fafc;
             /* Slate 50 */
-            --border-color: #e2e8f0;
+            --border-color: #b5d5ff;
             /* Slate 200 */
             --text-color: #000000;
             /* Slate 700 */
             --toolbar-bg: #f1f5f9;
             /* Slate 100 */
+            --toolbar-text: #475569;
+            --btn-border: #cbcbcb;
+            --btn-hover-bg: #eef2ff;
+            --code-color: #ef4444;
+            --code-bg: #f1f5f9;
+            --divider-color: #e2e8f0;
         }
 
         * {
@@ -77,8 +83,8 @@
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 0.5rem 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1.0rem;
+            box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -88,14 +94,13 @@
         }
 
         header svg {
-            width: 24px;
-            height: 24px;
+            width: 1.5rem;
+            height: 1.5rem;
         }
 
         header h1 {
             margin: 0;
-            font-size: 1.25rem;
-            font-weight: bold;
+            font-size: 1.3rem;
         }
 
         /* --- Main Layout --- */
@@ -121,56 +126,65 @@
         /* --- Toolbar --- */
         .toolbar {
             background-color: var(--toolbar-bg);
-            padding: 0.5rem 1rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0.5rem 1.0rem;
+            border-bottom: 2px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.875rem;
+            font-size: 1.0rem;
             font-weight: bold;
-            color: #475569;
+            color: var(--toolbar-text);
             flex-shrink: 0;
         }
 
         .toolbar-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
 
         /* --- Button Style --- */
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
+            justify-content: center;
+            gap: 0.3rem;
             background-color: white;
             color: var(--primary-color);
-            border: 1px solid #c7d2fe;
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            border: 2px solid var(--btn-border);
+            padding: 0.5rem 0.5rem;
+            border-radius: 0.3rem;
+            font-size: 0.8rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.05);
             font-family: inherit;
+            height: 2.4rem;
+            /* Giữ chiều cao cố định để không bị giật khi ẩn SVG */
+            line-height: 1;
         }
 
         .btn:hover {
-            background-color: #eef2ff;
+            background-color: var(--btn-hover-bg);
             border-color: var(--primary-color);
         }
 
         .btn svg {
-            width: 16px;
-            height: 16px;
+            width: 1.0rem;
+            height: 1.0rem;
+            flex-shrink: 0;
+        }
+
+        .btn span {
+            display: inline-block;
         }
 
         /* --- Input Area --- */
         #latex-input {
             flex: 1;
             width: 100%;
-            padding: 1rem;
+            padding: 1.0rem;
             border: none;
             resize: none;
             outline: none;
@@ -182,7 +196,7 @@
         /* --- Output Area --- */
         #latex-output {
             flex: 1;
-            padding: 2rem;
+            padding: 2.0rem;
             overflow-y: auto;
             word-wrap: break-word;
         }
@@ -193,63 +207,64 @@
             font-size: 1.1rem;
         }
 
+        /* Gộp chung thuộc tính của tiêu đề */
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        /* Gộp đường gạch chân của h1 và h2 */
+        .markdown-body h1,
+        .markdown-body h2 {
+            border-bottom: 2px solid var(--divider-color);
+            padding-bottom: 0.3rem;
+        }
+
         .markdown-body h1 {
             font-size: 1.5rem;
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-            font-weight: bold;
-            color: #000000;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 0.3em;
         }
 
         .markdown-body h2 {
             font-size: 1.4rem;
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-            font-weight: bold;
-            color: #000000;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 0.3em;
         }
 
         .markdown-body h3 {
             font-size: 1.3rem;
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-            font-weight: bold;
-            color: #000000;
         }
 
         .markdown-body p {
-            margin-bottom: 1em;
+            margin-bottom: 1.0rem;
         }
 
         .markdown-body ul,
         .markdown-body ol {
-            padding-left: 2em;
-            margin-bottom: 1em;
+            padding-left: 2.0rem;
+            margin-bottom: 1.0rem;
         }
 
         .markdown-body code {
-            background-color: #f1f5f9;
-            padding: 0.2em 0.4em;
-            border-radius: 4px;
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.3rem;
             font-family: monospace;
-            font-size: 0.9em;
-            color: #ef4444;
+            font-size: 0.9rem;
+            color: var(--code-color);
         }
 
         /* --- MathJax Fixes --- */
         mjx-container[display="false"] {
-            margin: 0 2px !important;
+            margin: 0 0.1rem !important;
             vertical-align: middle !important;
         }
 
         /* --- Scrollbar Customization --- */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 0.5rem;
+            height: 0.5rem;
         }
 
         ::-webkit-scrollbar-track {
@@ -258,7 +273,7 @@
 
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 4px;
+            border-radius: 0.3rem;
         }
 
         ::-webkit-scrollbar-thumb:hover {
@@ -275,7 +290,7 @@
             border-right: none !important;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 48.0rem) {
             main {
                 flex-direction: column;
             }
@@ -284,7 +299,7 @@
                 width: 100%;
                 height: 50%;
                 border-right: none;
-                border-bottom: 1px solid var(--border-color);
+                border-bottom: 2px solid var(--border-color);
             }
 
             main.fullscreen-active .column:last-child {
@@ -292,7 +307,7 @@
             }
 
             header h1 {
-                font-size: 1rem;
+                font-size: 1.0rem;
             }
 
             #latex-input,
@@ -304,6 +319,27 @@
 </head>
 
 <body>
+
+    <!-- Overlay kéo thả file -->
+    <div id="drag-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 0, 209, 0.15); backdrop-filter: blur(4px); z-index: 1000; border: 4px dashed var(--primary-color); align-items: center; justify-content: center; pointer-events: none; transition: all 0.2s;">
+        <div
+            style="background: white; padding: 2.0rem; border-radius: 0.8rem; box-shadow: 0 1.0rem 2.0rem rgba(0,0,0,0.1); text-align: center; border: 2px solid var(--border-color);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor"
+                style="width: 3.0rem; height: 3.0rem; color: var(--primary-color); margin-bottom: 1.0rem; display: inline-block;">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+            </svg>
+            <h2 style="margin: 0; font-size: 1.5rem; color: var(--primary-color); font-weight: bold;">Thả file vào đây
+            </h2>
+            <p style="margin: 0.5rem 0 0 0; color: #475569; font-size: 1.0rem;">Hỗ trợ file định dạng .md và .txt</p>
+        </div>
+    </div>
+
+    <!-- Input chọn file ẩn -->
+    <input type="file" id="file-selector" accept=".md,.txt,.MD,.TXT,text/plain,text/markdown" style="display: none;"
+        onchange="handleFileSelect(event)">
 
     <!-- Header -->
     <header>
@@ -330,27 +366,41 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                         </svg>
-                        Xóa
+                        <span>Xóa</span>
                     </button>
                 </div>
-                <button onclick="copyInput()" id="btn-copy-input" class="btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
-                    </svg>
-                    Sao Chép MD
-                </button>
+                <div class="toolbar-group">
+                    <button onclick="handleMdBtnClick()" id="btn-download-md" class="btn" title="Tải về file Markdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        <span>Tải MD</span>
+                    </button>
+                    <button onclick="copyInput()" id="btn-copy-input" class="btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                        </svg>
+                        <span>Chép MD</span>
+                    </button>
+                </div>
             </div>
             <textarea id="latex-input" spellcheck="false" placeholder="Nhập nội dung Markdown & LaTeX vào đây...">
 # Hướng dẫn sử dụng
 
 ## 1. Công thức cùng dòng (Inline)
-Phương trình $E=mc^2$ sẽ tự động có khoảng trắng khi copy.
-Nếu muốn to thì thêm `\displaystyle`: $\displaystyle \int_{a}^{b} x^2 dx$
+Phương trình: $E=mc^2$
+
+Nếu muốn công thức to hơn thì thêm `\displaystyle` ở trước công thức.
+
+Ví dụ:
+$\displaystyle \int_{a}^{b} x^2 dx$
 
 ## 2. Công thức tách dòng (Block)
-$$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
+$$\displaystyle x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
 
 ## 3. Ma trận
 $$
@@ -374,7 +424,7 @@ $$
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                         </svg>
-                        Lưu HTML
+                        <span>Lưu HTML</span>
                     </button>
                 </div>
                 <!-- Nút Phóng To (Đặt ngoài group để tự động cách đều hai bên) -->
@@ -393,7 +443,7 @@ $$
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
                     </svg>
-                    Sao Chép KQ
+                    <span>Chép KQ</span>
                 </button>
             </div>
             <div id="latex-output" class="markdown-body"></div>
@@ -447,6 +497,7 @@ $$
                     return MathJax.typesetPromise([output]);
                 }).catch((err) => console.log('MathJax Error:', err));
             }
+            updateDownloadImportButton();
         }
 
         let timeoutId;
@@ -457,20 +508,51 @@ $$
 
         window.addEventListener('load', renderContent);
 
-        function copyInput() {
-            input.select();
-            document.execCommand('copy');
-            window.getSelection().removeAllRanges();
+        async function copyInput() {
             const btn = document.getElementById('btn-copy-input');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span style="color: #16a34a">✓ Đã chép!</span>`;
-            setTimeout(() => btn.innerHTML = originalHtml, 1500);
+            const span = btn.querySelector('span');
+            const svg = btn.querySelector('svg');
+            const originalText = span.innerHTML;
+
+            span.innerHTML = '✓ Đã chép!';
+            span.style.color = '#16a34a';
+            svg.style.display = 'none';
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(input.value);
+                } else {
+                    // Fallback cho trình duyệt cũ hoặc môi trường không bảo mật
+                    input.select();
+                    document.execCommand('copy');
+                    window.getSelection().removeAllRanges();
+                }
+            } catch (err) {
+                console.warn('Clipboard API error, falling back to execCommand:', err);
+                try {
+                    input.select();
+                    document.execCommand('copy');
+                    window.getSelection().removeAllRanges();
+                } catch (e) {
+                    console.error('Tất cả phương thức sao chép đều thất bại:', e);
+                    span.innerHTML = 'Lỗi copy!';
+                    span.style.color = '#ef4444';
+                }
+            }
+
+            setTimeout(() => {
+                span.innerHTML = originalText;
+                span.style.color = '';
+                svg.style.display = '';
+            }, 1500);
         }
 
         // --- HÀM XÓA NỘI DUNG (CẢI TIẾN: Không dùng confirm) ---
         let clearTimeoutId;
         function clearInput() {
             const btn = document.getElementById('btn-clear');
+            const span = btn.querySelector('span');
+            const svg = btn.querySelector('svg');
 
             if (btn.dataset.confirm === "true") {
                 // Hành động xóa
@@ -483,9 +565,13 @@ $$
             } else {
                 // Chuyển sang trạng thái xác nhận
                 btn.dataset.confirm = "true";
-                btn.dataset.originalContent = btn.innerHTML; // Lưu nội dung cũ
-                btn.innerHTML = `<span style="color: #dc2626; font-weight: bold;">Chắc chắn?</span>`;
-                btn.style.borderColor = "#dc2626";
+                btn.dataset.originalText = span.innerHTML; // Lưu chữ gốc
+
+                span.innerHTML = 'Chắc chắn?';
+                span.style.color = '#dc2626';
+                span.style.fontWeight = 'bold';
+                btn.style.borderColor = '#dc2626';
+                svg.style.display = 'none';
 
                 // Tự động hủy sau 3s nếu không bấm tiếp
                 clearTimeoutId = setTimeout(() => {
@@ -496,9 +582,15 @@ $$
 
         function resetClearBtn(btn) {
             clearTimeout(clearTimeoutId);
+            const span = btn.querySelector('span');
+            const svg = btn.querySelector('svg');
+
             btn.dataset.confirm = "false";
-            btn.innerHTML = btn.dataset.originalContent;
-            btn.style.borderColor = ""; // Reset về CSS mặc định
+            span.innerHTML = btn.dataset.originalText;
+            span.style.color = '';
+            span.style.fontWeight = '';
+            btn.style.borderColor = ''; // Reset về CSS mặc định
+            svg.style.display = '';
         }
 
         function saveHtml() {
@@ -513,7 +605,7 @@ $$
 <title>Kết quả xuất HTML</title>
 <style>${styles}</style>
 <style>
-    body { padding: 2rem; background-color: #fff; max-width: 900px; margin: 0 auto; }
+    body { padding: 2.0rem; background-color: #fff; max-width: 56.3rem; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -534,6 +626,28 @@ ${content}
             const seconds = String(now.getSeconds()).padStart(2, '0');
 
             const fileName = `Ket_Qua_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.html`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadMd() {
+            const content = input.value;
+            const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const fileName = `Bai_Viet_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.md`;
 
             const a = document.createElement('a');
             a.href = url;
@@ -614,8 +728,13 @@ ${content}
 
         async function copyOutput() {
             const btn = document.getElementById('btn-copy-output');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = `<span style="color: #4f46e5">Đang xử lý...</span>`;
+            const span = btn.querySelector('span');
+            const svg = btn.querySelector('svg');
+            const originalText = span.innerHTML;
+
+            span.innerHTML = 'Đang xử lý...';
+            span.style.color = '#4f46e5';
+            svg.style.display = 'none';
 
             try {
                 const tempDiv = document.createElement('div');
@@ -637,16 +756,16 @@ ${content}
                 const realSvgs = tempDiv.querySelectorAll('mjx-container svg');
                 const tempContainers = tempDiv.querySelectorAll('mjx-container');
 
-                const conversionPromises = Array.from(realSvgs).map(async (svg, index) => {
+                const conversionPromises = Array.from(realSvgs).map(async (svgEl, index) => {
                     try {
-                        const pngData = await svgToPngDataUrl(svg);
+                        const pngData = await svgToPngDataUrl(svgEl);
                         const container = tempContainers[index];
 
                         if (pngData && container) {
                             const imgTag = document.createElement('img');
                             imgTag.src = pngData;
 
-                            const rect = svg.getBoundingClientRect();
+                            const rect = svgEl.getBoundingClientRect();
                             imgTag.style.width = rect.width + 'px';
                             imgTag.style.height = rect.height + 'px';
                             imgTag.style.verticalAlign = '-0.5ex';
@@ -686,17 +805,106 @@ ${content}
                 selection.removeAllRanges();
 
                 if (successful) {
-                    btn.innerHTML = `<span style="color: #16a34a">✓ Đã chép xong!</span>`;
+                    span.innerHTML = '✓ Đã chép xong!';
+                    span.style.color = '#16a34a';
                 } else {
-                    btn.innerHTML = `<span style="color: #ef4444">Lỗi copy!</span>`;
+                    span.innerHTML = 'Lỗi copy!';
+                    span.style.color = '#ef4444';
                 }
             } catch (err) {
                 console.error(err);
-                btn.innerHTML = `<span style="color: #ef4444">Lỗi xử lý!</span>`;
+                span.innerHTML = 'Lỗi xử lý!';
+                span.style.color = '#ef4444';
             }
 
-            setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
+            setTimeout(() => {
+                span.innerHTML = originalText;
+                span.style.color = '';
+                svg.style.display = '';
+            }, 2000);
         }
+
+        function handleMdBtnClick() {
+            const btn = document.getElementById('btn-download-md');
+            if (btn.dataset.mode === "import") {
+                document.getElementById('file-selector').click();
+            } else {
+                downloadMd();
+            }
+        }
+
+        function updateDownloadImportButton() {
+            const btn = document.getElementById('btn-download-md');
+            if (!btn) return;
+            const span = btn.querySelector('span');
+            const svg = btn.querySelector('svg');
+
+            if (input.value.trim() === "") {
+                // Trạng thái Nhập MD
+                btn.title = "Nhập file Markdown hoặc TXT";
+                span.textContent = "Nhập MD";
+                svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />`;
+                btn.dataset.mode = "import";
+            } else {
+                // Trạng thái Tải MD
+                btn.title = "Tải về file Markdown";
+                span.textContent = "Tải MD";
+                svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />`;
+                btn.dataset.mode = "download";
+            }
+        }
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                handleFileImport(files[0]);
+                event.target.value = '';
+            }
+        }
+
+        function handleFileImport(file) {
+            const extension = file.name.split('.').pop().toLowerCase();
+            if (extension === 'md' || extension === 'txt') {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    input.value = event.target.result;
+                    renderContent();
+                    input.focus();
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Chỉ hỗ trợ kéo thả hoặc nhập file có định dạng .md hoặc .txt!');
+            }
+        }
+
+        // Đăng ký các sự kiện kéo thả file trên window
+        const dragOverlay = document.getElementById('drag-overlay');
+
+        window.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.types.includes('Files')) {
+                dragOverlay.style.display = 'flex';
+            }
+        });
+
+        window.addEventListener('dragleave', (e) => {
+            if (e.relatedTarget === null || !document.documentElement.contains(e.relatedTarget)) {
+                dragOverlay.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragOverlay.style.display = 'none';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileImport(files[0]);
+            }
+        });
+
+        window.addEventListener('dragend', () => {
+            dragOverlay.style.display = 'none';
+        });
     </script>
 </body>
 
