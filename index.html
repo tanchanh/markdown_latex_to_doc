@@ -280,12 +280,25 @@
             background: #94a3b8;
         }
 
+        /* --- Tên tác giả --- */
+        header .author {
+            font-style: normal;
+            font-size: 1.2rem;
+            color: white;
+            margin-left: auto;
+        }
+
         /* --- Fullscreen styles --- */
-        main.fullscreen-active .column:first-child {
+        body.fullscreen-active header,
+        body.fullscreen-active .author {
             display: none !important;
         }
 
-        main.fullscreen-active .column:last-child {
+        body.fullscreen-active main .column:first-child {
+            display: none !important;
+        }
+
+        body.fullscreen-active main .column:last-child {
             width: 100% !important;
             border-right: none !important;
         }
@@ -302,7 +315,7 @@
                 border-bottom: 2px solid var(--border-color);
             }
 
-            main.fullscreen-active .column:last-child {
+            body.fullscreen-active main .column:last-child {
                 height: 100% !important;
             }
 
@@ -349,6 +362,7 @@
                 d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
         </svg>
         <h1>Markdown & LaTeX &nbsp; To &nbsp; Word / Docs</h1>
+        <div class="author">D.T.Chánh</div>
     </header>
 
     <!-- Main Content -->
@@ -657,10 +671,10 @@ ${content}
         }
 
         function toggleFullscreen() {
-            const mainEl = document.querySelector('main');
+            const bodyEl = document.body;
             const btn = document.getElementById('btn-fullscreen');
             const icon = document.getElementById('fullscreen-icon');
-            const isFullscreen = mainEl.classList.toggle('fullscreen-active');
+            const isFullscreen = bodyEl.classList.toggle('fullscreen-active');
 
             if (isFullscreen) {
                 btn.querySelector('span').textContent = 'Thu Nhỏ';
